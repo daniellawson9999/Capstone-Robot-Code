@@ -79,13 +79,12 @@ import java.io.IOException;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-public class ZoDriving extends LinearOpMode {
+public class CsDriving extends LinearOpMode {
 
     /* Declare OpMode members. */
     ZoHardware         robot   = new ZoHardware();
     private ElapsedTime     runtime = new ElapsedTime();
     String xyz = "z";
-
 
     static final double     COUNTS_PER_MOTOR_REV    = 288 ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1;    // This is < 1.0 if geared UP
@@ -96,8 +95,8 @@ public class ZoDriving extends LinearOpMode {
     static final double     TURN_SPEED              = 1;
 
     BNO055IMU imu;
-    public boolean runTf = true;
-    TensorFlow tf;
+
+    Model model;
     @Override
     public void runOpMode() {
         /*
@@ -132,11 +131,8 @@ public class ZoDriving extends LinearOpMode {
         robot.motorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        if (runTf){
-            tf = new TensorFlow(hardwareMap, Device.Webcam,telemetry);
-        }else{
-            tf = null;
-        }
+        model = new Model(hardwareMap,telemetry);
+
         waitForStart();
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         //tf.start(); //moved to start of program

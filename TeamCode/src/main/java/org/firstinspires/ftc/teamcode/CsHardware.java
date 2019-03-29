@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 
-public class ZoHardware
+public class CsHardware
 {
     // Here we define all of the motors we use.
     // Our robot uses omni-wheels and a four motor drive system.
