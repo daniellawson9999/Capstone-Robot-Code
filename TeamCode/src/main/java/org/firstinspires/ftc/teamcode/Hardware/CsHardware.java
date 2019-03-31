@@ -1,7 +1,7 @@
 //RENAME THE ROBOT TO SOMETHING MORE CREATIVE -PULKIT 9/27/2017
 // A most amazing and thought provoking Idea - Naren Ram
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 
-public class ZoHardware
+public class CsHardware
 {
     // Here we define all of the motors we use.
     // Our robot uses omni-wheels and a four motor drive system.

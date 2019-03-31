@@ -27,28 +27,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.TensorFlow.Device;
+import org.firstinspires.ftc.teamcode.Hardware.CsHardware;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
-import java.io.IOException;
+import org.firstinspires.ftc.teamcode.Network.Model;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -79,13 +75,12 @@ import java.io.IOException;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-public class ZoDriving extends LinearOpMode {
+public class CsDriving extends LinearOpMode {
 
     /* Declare OpMode members. */
-    ZoHardware         robot   = new ZoHardware();
+    CsHardware robot   = new CsHardware();
     private ElapsedTime     runtime = new ElapsedTime();
-    String xyz = "z";
-
+    public String xyz = "z";
 
     static final double     COUNTS_PER_MOTOR_REV    = 288 ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1;    // This is < 1.0 if geared UP
@@ -96,8 +91,8 @@ public class ZoDriving extends LinearOpMode {
     static final double     TURN_SPEED              = 1;
 
     BNO055IMU imu;
-    public boolean runTf = true;
-    TensorFlow tf;
+
+    Model model;
     @Override
     public void runOpMode() {
         /*
@@ -132,11 +127,8 @@ public class ZoDriving extends LinearOpMode {
         robot.motorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        if (runTf){
-            tf = new TensorFlow(hardwareMap, Device.Webcam,telemetry);
-        }else{
-            tf = null;
-        }
+        //model = new Model(hardwareMap,telemetry);
+
         waitForStart();
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         //tf.start(); //moved to start of program

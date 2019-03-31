@@ -1,27 +1,26 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Network;
 
 import android.graphics.Bitmap;
+import android.util.Log;
+import org.opencv.android.Utils;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
-
-import org.tensorflow.lite.Interpreter;
-
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
-import org.deeplearning4j.nn.graph.ComputationGraph;
-import org.deeplearning4j.nn.modelimport.keras.KerasModelImport;
-import org.nd4j.linalg.io.ClassPathResource;
-import org.deeplearning4j.*;
-import org.opencv.android.Utils;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
+import org.tensorflow.lite.Interpreter;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Model {
     private static final String VUFORIA_KEY = "AVtZQ6n/////AAABmdcWQU7kykWgmYCE0DI/QOReCtZljUv/ks9BxJvDlzzFaMhm4I4BBhWA8BDMwM6wDclf7C3Uejvm+pnib7YV+D/n8iAQdR7MAGlBGRqXbUPG1HwHfKCK27WTAuNxHilwwMcEIyPjgJY+9ozAZtnbaWzCDZjrNC1WlClxqnGMT5qO93K2ARRy+3FKtNV93opS7YAVfhRSNxWh/bBRa05OWKjB41PdctoT1IWWsabSad2Fvj7qzasRnG+cmO2ePVMxIwEPC2w1K6gQSFBsk97Sku2EmqgsnRYNzqnXpPn/tXhsQhmiTpWkZUnZTfTsnx3jxB6vdfoZA+JKBqrlfqqqxiBWLx72h0f31ek6TuwdwTTd";
@@ -32,11 +31,17 @@ public class Model {
 
     private Telemetry telemetry;
 
+    private Action[] actions;
+
+    private Interpreter model;
+
     //add model stuff
-    public Model(HardwareMap hwMap, Telemetry telemetry, String structure, String weights){
+    public Model(HardwareMap hwMap, Telemetry telemetry, String modelName, Action[] actions){
         this.telemetry = telemetry;
 
         this.hwMap = hwMap;
+
+        this.actions = actions;
 
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -46,18 +51,45 @@ public class Model {
 
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        try{
-            ComputationGraph model = KerasModelImport.importKerasModelAndWeights(structure,weights);
-        }catch(Exception e){
-            //Log.d(LOG_TAG, "Image format not found");
-        }
+        String baseDirectory = "/sdcard/FIRST/CS/";
+        String path = baseDirectory + modelName + ".tflite";
+        File f = new File(path);
+        model = new Interpreter(f);
+
     }
-    public enum Actions{
+
+    public enum Action{
         Left,Right,Forwards,Backwards,CC,CCW
     }
 
-    public int[] predict(Mat state){
+    public Action predict(){
+        Mat mat = processFrame(getFrame());
+        int numActions = actions.length;
+        double[] values = new double[numActions];
+        for (int i = 0; i < numActions; i++){
+            double[] actionInput = new double[numActions];
+            actionInput[i] = 1;
+            Object[] inputs = {mat,actionInput};
+            double[] output = new double[1];
+            Map<Integer,Object> outputs = new HashMap();
+            outputs.put(0,output);
+            model.runForMultipleInputsOutputs(inputs,outputs);
+            values[i] = ((double) outputs.get(0));
+        }
+        int action = -1;
+        double value = 0;
+        for (int i = 0; i < numActions; i++){
+           if(action == -1 || values[i] > value){
+                action = i;
+                value = values[i];
+            }
+        }
+        Action actionName = actions[action];
+        return actionName;
+    }
 
+    public Mat processFrame(Mat frame){
+        return frame;
     }
 
     public Mat getFrame() {
@@ -68,7 +100,7 @@ public class Model {
             // grab the last frame pushed onto the queue
             frame = vuforia.getFrameQueue().take();
         } catch (InterruptedException e) {
-            //Log.d(LOG_TAG, "Problem taking frame off Vuforia queue");
+            Log.d("model", "Problem taking frame off Vuforia queue");
             e.printStackTrace();
             return null;
         }
@@ -85,7 +117,7 @@ public class Model {
         }
 
         if(rgb == null) {
-            //Log.d(LOG_TAG, "Image format not found");
+            Log.d("model", "Image format not found");
             return null;
         }
 
@@ -98,7 +130,7 @@ public class Model {
         Utils.bitmapToMat(bm, mat);
 
         // convert to BGR before returning
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2BGR);
+        //Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2BGR);
 
         frame.close();
 

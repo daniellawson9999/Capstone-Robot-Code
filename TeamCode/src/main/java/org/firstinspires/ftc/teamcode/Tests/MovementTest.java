@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Tests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import org.firstinspires.ftc.teamcode.TensorFlow.RobotOrientation;
 
-@Autonomous(name="MovementTest", group="Zippo")
-public class MovementTest extends ZoDriving {
+import org.firstinspires.ftc.teamcode.Autonomous.CsDriving;
+
+@Autonomous(name="MovementTest", group="Cs")
+public class MovementTest extends CsDriving {
     public void runOpMode()
     {
         super.runOpMode();
