@@ -27,7 +27,6 @@ public class Model {
 
     private VuforiaLocalizer vuforia;
 
-    private HardwareMap hwMap;
 
     private Telemetry telemetry;
 
@@ -36,26 +35,34 @@ public class Model {
     private Interpreter model;
 
     //add model stuff
-    public Model(HardwareMap hwMap, Telemetry telemetry, String modelName, Action[] actions){
+    public Model(Telemetry telemetry, String modelName, Action[] actions){
         this.telemetry = telemetry;
 
-        this.hwMap = hwMap;
 
         this.actions = actions;
 
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-
-        parameters.cameraName = hwMap.get(WebcamName.class, "Webcam");
-
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         String baseDirectory = "/sdcard/FIRST/CS/";
         String path = baseDirectory + modelName + ".tflite";
         File f = new File(path);
         model = new Interpreter(f);
     }
+    /*
+  where are the file on the phone? and how to upload. Credit to team 9773 for uploading examples.
+        storage / emulated / FIRST / team9773 / json18
+        1) open terminal tab on android studio
+        2) get to the right dir on the computer, for example
+        cd TeamCode/src/main/java/org/firstinspires/ftc/teamcode/json/
+        3) push a file to the phone:
+        adb push myfile.json /sdcard/FIRST/team9773/json18/
+        location of adb on mac: $HOME/Library/Android/sdk/platform-tools
+          where you can get the $HOME value by typing "echo $HOME" in a terminal
+          export PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
+        4) get a file from the phone
+        adb pull  /sdcard/FIRST/team9773/json18/myfile.json
+*/
+
     //constructor for local testing
     public Model(String modelName, Action[] actions){
         String relativeDirectory = "./org/firstinspires/ftc/teamcode/Models/";

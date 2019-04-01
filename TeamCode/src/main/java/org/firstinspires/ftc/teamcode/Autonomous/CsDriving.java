@@ -29,8 +29,11 @@
 
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.CsHardware;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -45,6 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.teamcode.Network.Model;
+import org.firstinspires.ftc.teamcode.Network.VisionPipeline;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -92,7 +96,11 @@ public class CsDriving extends LinearOpMode {
 
     BNO055IMU imu;
 
-    Model model;
+    public Model model;
+    public boolean usePipeline = false;
+    public VisionPipeline pipeline = null;
+    public WebcamName webcamName;
+
     @Override
     public void runOpMode() {
         /*
@@ -128,6 +136,17 @@ public class CsDriving extends LinearOpMode {
         robot.motorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //model = new Model(hardwareMap,telemetry);
+        if(usePipeline){
+            pipeline = new VisionPipeline();
+
+            webcamName = hardwareMap.get(WebcamName.class, "Webcam"); //Retrieves the webcam from the hardware map
+
+
+            //Sets the Vuforia license key. ALWAYS SET BEFORE INIT!
+            //pipeline.init()
+            //pipeline.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.C,)
+
+        }
 
         waitForStart();
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
