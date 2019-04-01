@@ -55,15 +55,21 @@ public class Model {
         String path = baseDirectory + modelName + ".tflite";
         File f = new File(path);
         model = new Interpreter(f);
-
     }
+    //constructor for local testing
+    public Model(String modelName, Action[] actions){
+        String relativeDirectory = "./org/firstinspires/ftc/teamcode/Models/";
+        String path = relativeDirectory + modelName + ".tflite";
+        File f = new File(path);
+        model = new Interpreter(f);
+    }
+
 
     public enum Action{
         Left,Right,Forwards,Backwards,CC,CCW
     }
 
-    public Action predict(){
-        Mat mat = processFrame(getFrame());
+    public Action predict(Mat mat){
         int numActions = actions.length;
         double[] values = new double[numActions];
         for (int i = 0; i < numActions; i++){
